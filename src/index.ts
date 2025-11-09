@@ -3,6 +3,15 @@
 import {FastMCP} from "fastmcp";
 import {z} from "zod"; // Or any validation library that supports Standard Schema
 
+const server = new FastMCP({
+	name: "test",
+	version: "1.0.0"
+});
+
+export default function createServer() {
+	return server;
+}
+
 const apiKey: string = process.env.API_KEY;
 
 const calcXiaoBenYangApi = async function (fullArgs) {
@@ -35,7 +44,7 @@ const JAVA_TO_ZOD_MAP = {
 
 	// 集合类型（全类名）
 	'java.util.List': (genericType) => z.array(convertJavaTypeToZod(genericType)), // 泛型参数递归转换
-	'java.util.Set': (genericType) => z.array(convertJavaTypeToZod(genericType)).unique(), // Set 对应去重数组
+	// 'java.util.Set': (genericType) => z.array(convertJavaTypeToZod(genericType)).unique(), // Set 对应去重数组
 	'java.util.Map': (keyType, valueType) => z.record(convertJavaTypeToZod(keyType), convertJavaTypeToZod(valueType)), // Map 对应 record
 
 	// 简单类名映射（防止全类名解析失败时 fallback）
@@ -133,10 +142,6 @@ fetch('https://xiaobenyang.com/api/' + apiKey, {
 })
 	.then((data) => {
 		const apiDescList = data.tools;
-		const server = new FastMCP({
-			name: data.name,
-			version: data.version,
-		});
 
 		const addToolXiaoBenYangApi = function (aid, title, desc, params) {
 			server.addTool({
@@ -162,5 +167,6 @@ fetch('https://xiaobenyang.com/api/' + apiKey, {
 			transportType: "stdio",
 		});
 	});
+
 
 
