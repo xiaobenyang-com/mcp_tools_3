@@ -3,16 +3,6 @@
 import {FastMCP} from "fastmcp";
 import {z} from "zod"; // Or any validation library that supports Standard Schema
 
-declare global {
-	namespace NodeJS {
-		interface ProcessEnv {
-			MCP_ID: string;
-			API_KEY?: string;
-		}
-	}
-}
-export {};
-
 const apiKey: string = process.env.API_KEY;
 
 const calcXiaoBenYangApi = async function (fullArgs) {
