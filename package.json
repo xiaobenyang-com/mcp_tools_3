@@ -12,6 +12,9 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
+	"engines": {
+		"node": ">=22.0.0"
+	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.20.0",
 		"@smithery/sdk": "^1.7.4",
