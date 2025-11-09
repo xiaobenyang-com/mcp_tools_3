@@ -1,5 +1,3 @@
-dist
+.smithery/
 node_modules
-.npmrc
 .env
-.DS_Store
