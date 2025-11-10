@@ -8,6 +8,10 @@ export const configSchema = z.object({
 const apiKey: string = process.env.API_KEY || '';
 const mcpID: string = process.env.MCP_ID;
 
+
+console.log("apiKey: " + apiKey)
+console.log("mcpID: " + mcpID)
+
 const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
     // 发起 POST 请求
     const response = await fetch('https://xiaobenyang.com/api', {
@@ -148,66 +152,73 @@ const convertParamsToZ = function (params: Record<string, string>) {
     return zParams;
 };
 
+
+const server = new McpServer({
+    name: "Say Hello",
+    version: "1.0.0",
+})
+
+console.log("1111111");
+let isLoading: boolean = false;
+
+fetch('https://xiaobenyang.com/api/' + mcpID, {
+    method: 'GET',
+}).then((res) => {
+    console.log("g22222");
+    if (!res.ok) {
+        console.log("g33333");
+        throw new Error(`请求失败：${res.status}`);
+    }
+    return res.json(); // 解析响应体为 JSON（假设返回 { apiDescList: [...] }）
+})
+    .then((data) => {
+        console.log("g44444");
+        const apiDescList = data.tools;
+
+        const addToolXiaoBenYangApi = function (
+            aid: string,
+            title: string,
+            desc: string,
+            params: Record<string, ZodType>
+        ) {
+            server.registerTool(
+                title,
+                {
+                    title: title,
+                    description: desc,
+                    inputSchema: params,
+                }
+                ,
+                async (args: Record<string, any>) => handleXiaoBenYangApi(args, aid)
+            )
+        };
+
+        console.log("g5555");
+
+        for (const apiDesc of apiDescList) {
+            addToolXiaoBenYangApi(apiDesc.apiId.toString(),
+                apiDesc.title,
+                apiDesc.description ? apiDesc.description : apiDesc.title,
+                convertParamsToZ(apiDesc.params)
+            );
+        }
+        isLoading = true;
+
+        console.log("g66666");
+
+    });
+
+
 export default function createServer({config,}: { config: z.infer<typeof configSchema> }) {
-    const server = new McpServer({
-        name: "Say Hello",
-        version: "1.0.0",
-    })
-    let isLoading: boolean = false;
-
-     fetch('https://xiaobenyang.com/api/' + mcpID, {
-        method: 'GET',
-    }).then((res) => {
-        if (!res.ok) throw new Error(`请求失败：${res.status}`);
-        return res.json(); // 解析响应体为 JSON（假设返回 { apiDescList: [...] }）
-    })
-        .then((data) => {
-            const apiDescList = data.tools;
-
-            const addToolXiaoBenYangApi = function (
-                aid: string,
-                title: string,
-                desc: string,
-                params: Record<string, ZodType>
-            ) {
-                server.registerTool(
-                    title,
-                    {
-                        title: title,
-                        description: desc,
-                        inputSchema: {name: z.string().describe("Name to greet")},
-                    }
-                    ,
-                    // async (args: Record<string, any>) => handleXiaoBenYangApi(args, aid)
-                    async (args: Record<string, any>) => ({
-                        content: [
-                            {
-                                type: "text",
-                                text: "test"
-                            }
-                        ],
-                    }),
-                )
-            };
-
-            for (const apiDesc of apiDescList) {
-                addToolXiaoBenYangApi(apiDesc.apiId.toString(),
-                    apiDesc.title,
-                    apiDesc.description ? apiDesc.description : apiDesc.title,
-                    // convertParamsToZ(apiDesc.params)
-                    null
-                );
-            }
-            isLoading = true;
-
-        });
+    console.log("4444444");
 
      while (!isLoading) {
+         console.log("55555");
          setTimeout(() => {
              console.log('500 毫秒后执行');
          }, 500);
     }
-
+    console.log("66666");
     return server.server;
 
     // // Add a tool
