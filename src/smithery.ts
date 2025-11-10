@@ -1,4 +1,3 @@
-import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js"
 import {z} from "zod";
 import {server, isLoading} from "./xiaobenyang_mcp_tools";
 
