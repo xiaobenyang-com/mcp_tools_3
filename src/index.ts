@@ -7,8 +7,7 @@ export const configSchema = z.object({
 })
 
 const apiKey: string = process.env.API_KEY || '';
-// const mcpID: string = process.env.MCP_ID;
-const mcpID: string = "1804087353852938"
+const mcpID: string = process.env.MCP_ID;
 
 const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
     // 发起 POST 请求
