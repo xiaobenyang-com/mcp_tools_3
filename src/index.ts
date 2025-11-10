@@ -22,7 +22,7 @@ const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
         },
         body: new URLSearchParams(fullArgs)
     });
-    const apiResult = await calcXiaoBenYangApi(fullArgs); // 假设返回 string
+    const apiResult = await response.text();
 
     return {
         content: [
@@ -36,6 +36,7 @@ const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
 
 
 const handleXiaoBenYangApi = async (args: Record<string, any>, aid: string) => {
+    console.log("handleXiaoBenYangApi: " + aid);
     // 校验aid是否存在
     if (aid === undefined || aid === null) {
         throw new Error("缺少必要参数 'aid'");
