@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {server, isLoading} from "./xiaobenyang_mcp_tools";
+import {server, isLoading} from "./xiaobenyang_mcp_tools.js";
 
 export const configSchema = z.object({
 })
