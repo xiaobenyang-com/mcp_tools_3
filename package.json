@@ -2,8 +2,8 @@
 	"name": "smithery-local-filesystem",
 	"version": "1.0.0",
 	"description": "MCP server with local filesystem access",
-	"main": "index.js",
-	"module": "./src/index.ts",
+	"main": "smithery.ts",
+	"module": "./src/smithery.ts",
 	"type": "module",
 	"scripts": {
 		"dev": "smithery dev",
