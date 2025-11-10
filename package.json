@@ -6,6 +6,8 @@
 	"module": "./src/smithery.ts",
 	"type": "module",
 	"scripts": {
+		"tsc": "rm -rf dist && tsc",
+		"prepublishOnly": "npm run tsc",
 		"dev": "smithery dev",
 		"build": "smithery build",
 		"smithery-dev": "npx @smithery/cli dev"

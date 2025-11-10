@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES6"
+  },
+  "include": ["src/**/*.ts"], // 编译 src 目录下所有 .ts 文件
+  "exclude": ["src/test/**/*"] // 排除测试目录
+}
