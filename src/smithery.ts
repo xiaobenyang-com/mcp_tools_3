@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {configSchema, server, isLoading} from "./index";
+import {configSchema, server, isLoading} from "./xiaobenyang_mcp_tools";
 
 export default function createServer({config,}: { config: z.infer<typeof configSchema> }) {
     console.log("4444444");

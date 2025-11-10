@@ -45,10 +45,10 @@ By default, it uses the current working directory.
 ## Development
 
 Your code is organized as:
-- `src/index.ts.bak` - MCP server with glob and grep tools
+- `src/xiaobenyang_mcp_tools.ts.bak` - MCP server with glob and grep tools
 - `smithery.yaml` - Runtime specification with `target: local` for filesystem access
 
-Edit `src/index.ts.bak` to add your own filesystem tools.
+Edit `src/xiaobenyang_mcp_tools.ts.bak` to add your own filesystem tools.
 
 ## Build
 
