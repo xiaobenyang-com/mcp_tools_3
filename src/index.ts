@@ -3,7 +3,6 @@ import {z, ZodType} from "zod";
 
 // Optional: If you have user-level config, define it here
 export const configSchema = z.object({
-    debug: z.boolean().default(false).describe("Enable debug logging"),
 })
 
 const apiKey: string = process.env.API_KEY || '';
@@ -195,7 +194,9 @@ export default function createServer({config,}: { config: z.infer<typeof configS
                 addToolXiaoBenYangApi(apiDesc.apiId.toString(),
                     apiDesc.title,
                     apiDesc.description ? apiDesc.description : apiDesc.title,
-                    convertParamsToZ(apiDesc.params));
+                    // convertParamsToZ(apiDesc.params)
+                    null
+                );
             }
             isLoading = true;
 
