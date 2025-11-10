@@ -1,5 +1,9 @@
+import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js"
 import {z} from "zod";
-import {configSchema, server, isLoading} from "./xiaobenyang_mcp_tools";
+import {server, isLoading} from "./xiaobenyang_mcp_tools";
+
+export const configSchema = z.object({
+})
 
 export default function createServer({config,}: { config: z.infer<typeof configSchema> }) {
     console.log("4444444");

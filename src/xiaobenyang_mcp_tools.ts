@@ -2,8 +2,6 @@ import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js"
 import {z, ZodType} from "zod";
 
 // Optional: If you have user-level config, define it here
-export const configSchema = z.object({
-})
 
 const apiKey: string = process.env.API_KEY || '';
 // const mcpID: string = process.env.MCP_ID;
