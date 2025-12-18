@@ -1,49 +1,69 @@
-## 在线新闻
+# Local Filesystem MCP Server
 
-本MCP服务封装了新闻相关工具。
+A Model Context Protocol (MCP) server for exploring local filesystems with glob and grep tools.
 
-## 工具列表
+Built with [Smithery SDK](https://smithery.ai/docs)
 
-本MCP服务封装了新闻相关工具，可让模型通过标准化接口调用以下功能：
+## Features
 
-| 工具名称	 | 描述                 |
-|-------|--------------------|
-| aa    | 	xxxx（例如：实时热点新闻查询） |
-| bb    | 	yyy（例如：新闻内容关键词提取） |
+This server provides two essential tools for filesystem exploration:
 
+- **glob** - Find files matching patterns (e.g., `**/*.ts`, `src/**/*.js`)
+- **grep** - Search for text patterns in files
 
-## 前置需求 ｜ Prerequisite
-Node.js 22 版本或以上。
+## Prerequisites
 
-Node.js 22 or above.
+- **Smithery API key**: Get yours at [smithery.ai/account/api-keys](https://smithery.ai/account/api-keys)
 
-## 开始使用 ｜ Start
+## Getting Started
 
-###  使用 Streamable HTTP 启动 | Start by Streamable HTTP transport
-```
-npm start
-```
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-### 使用 Stdio 启动 ｜ Start by Stdio transport
+2. Start development server:
+   ```bash
+   npm run dev
+   ```
 
+The server will run locally and provide access to your filesystem through the MCP protocol.
 
-```
-{
-    "mcpServers": {
-        "xiaobenyang-mcp": {
-          "command": "npx", 
-          "args": [
-            "xiaobenyang-mcp"
-          ],
-          "env": { 
-            "API_KEY": "你的实际apikey", 
-            "MCP_ID": "1804087353852938",  
-            "LOG_LEVEL": "info" 
-          }
-        }
-      }
-}
+## Configuration
+
+You can customize the working directory in your `smithery.yaml` config:
+
+```yaml
+runtime: typescript
+target: local
+config:
+  workingDirectory: /path/to/your/directory
 ```
 
-##  Inspector
-npx @modelcontextprotocol/inspector npx xiaobenyang-mcp
+By default, it uses the current working directory.
+
+## Development
+
+Your code is organized as:
+- `src/xiaobenyang_mcp_tools.ts.bak` - MCP server with glob and grep tools
+- `smithery.yaml` - Runtime specification with `target: local` for filesystem access
+
+Edit `src/xiaobenyang_mcp_tools.ts.bak` to add your own filesystem tools.
+
+## Build
+
+```bash
+npm run build
+```
+
+Creates bundled server in `.smithery/`
+
+## Deploy
+
+This server uses `target: local` in `smithery.yaml`, which means it's designed to run locally with filesystem access. It cannot be deployed to remote Smithery hosting.
+
+## Learn More
+
+- [Smithery Docs](https://smithery.ai/docs)
+- [MCP Protocol](https://modelcontextprotocol.io)
+
