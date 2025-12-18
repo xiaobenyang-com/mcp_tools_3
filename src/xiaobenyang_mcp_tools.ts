@@ -55,7 +55,7 @@ const server = new McpServer({
 console.log("1111111");
 let isLoading: boolean = false;
 
-fetch('https://xiaobenyang.com/api/' + mcpID, {
+fetch('https://mcp.xiaobenyang.com/getMcpDesc?mcpId=' + mcpID, {
     method: 'GET',
 }).then((res) => {
     console.log("g22222");
