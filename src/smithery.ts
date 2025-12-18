@@ -13,6 +13,6 @@ export default function createServer({config,}: { config: z.infer<typeof configS
             console.log('500 毫秒后执行');
         }, 500);
     }
-    console.log("66666");
+
     return server.server;
 }
