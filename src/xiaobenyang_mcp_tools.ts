@@ -3,20 +3,21 @@ import {z, ZodType} from "zod";
 
 // Optional: If you have user-level config, define it here
 
-const apiKey: string = process.env.API_KEY || '';
+const apiKey: string = process.env.XBY_APIKEY || '';
 // const mcpID: string = process.env.MCP_ID;
-const mcpID: string = '1804087353852938';
+const mcpID: string = '1777316659202051';
 
 console.log("apiKey: " + apiKey)
 console.log("mcpID: " + mcpID)
 
 const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
     // 发起 POST 请求
-    const response = await fetch('https://xiaobenyang.com/api', {
+    let response = await fetch('https://mcp.xiaobenyang.com/api', {
         method: 'POST',
         headers: {
-            'APIKEY': apiKey,
-            'aid': mcpID
+            'XBY-APIKEY': apiKey,
+            'func': fullArgs.toolName,
+            'mcpid': mcpID
         },
         body: new URLSearchParams(fullArgs)
     });
@@ -33,122 +34,16 @@ const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
 };
 
 
-const handleXiaoBenYangApi = async (args: Record<string, any>, aid: string) => {
-    console.log("handleXiaoBenYangApi: " + aid);
+const handleXiaoBenYangApi = async (args: Record<string, any>, toolName: string) => {
+    console.log("handleXiaoBenYangApi: " + toolName);
     // 校验aid是否存在
-    if (aid === undefined || aid === null) {
+    if (toolName === undefined || toolName === null) {
         throw new Error("缺少必要参数 'aid'");
     }
     // 合并参数
-    const fullArgs = {...args, aid};
+    const fullArgs = {...args, toolName:toolName};
     // 调用API
     return calcXiaoBenYangApi(fullArgs);
-};
-
-/**
- * Java 类型转 Zod 类型的映射表
- */
-const JAVA_TO_ZOD_MAP: Record<string, (...generics: string[]) => ZodType> = {
-    // 基础类型（全类名）
-    'java.lang.String': () => z.string(),
-    'java.lang.Integer': () => z.number().int(),
-    'java.lang.Long': () => z.number().int(),
-    'java.lang.Float': () => z.number(),
-    'java.lang.Double': () => z.number(),
-    'java.lang.Boolean': () => z.boolean(),
-    'java.time.LocalDate': () => z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    'java.time.LocalDateTime': () => z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
-
-    // 集合类型（全类名）
-    'java.util.List': (genericType) => z.array(convertJavaTypeToZod(genericType)),
-    // 'java.util.Set': (genericType) => z.array(convertJavaTypeToZod(genericType)).unique(),
-    'java.util.Map': (keyType, valueType) => z.record(convertJavaTypeToZod(keyType), convertJavaTypeToZod(valueType)),
-
-    // 简单类名映射
-    String: () => z.string(),
-    Integer: () => z.number().int(),
-    Long: () => z.number().int(),
-    Float: () => z.number(),
-    Double: () => z.number(),
-    Boolean: () => z.boolean(),
-    List: (genericType) => z.array(convertJavaTypeToZod(genericType)),
-};
-
-/**
- * 解析 Java 泛型类型
- * @param javaType Java 类型字符串
- * @returns 解析结果 { base: 基础类型, generics: 泛型参数数组 }
- */
-function parseGenericType(javaType: string): { base: string; generics: string[] } {
-    const angleBracketIndex = javaType.indexOf('<');
-    if (angleBracketIndex === -1) {
-        return {base: javaType.trim(), generics: []};
-    }
-
-    const baseType = javaType.slice(0, angleBracketIndex).trim();
-    const genericsStr = javaType.slice(angleBracketIndex + 1, javaType.lastIndexOf('>')).trim();
-
-    const generics: string[] = [];
-    let balance = 0;
-    let current = '';
-    for (const char of genericsStr) {
-        if (char === '<') balance++;
-        if (char === '>') balance--;
-        if (char === ',' && balance === 0) {
-            generics.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    if (current) generics.push(current.trim());
-
-    return {base: baseType, generics};
-}
-
-/**
- * 将 Java 类型名称转换为 Zod 类型
- * @param javaType Java 类型全名
- * @returns Zod 类型对象
- */
-function convertJavaTypeToZod(javaType: string): ZodType {
-    const {base: baseType, generics} = parseGenericType(javaType);
-
-    if (JAVA_TO_ZOD_MAP[baseType]) {
-        return JAVA_TO_ZOD_MAP[baseType](...generics);
-    }
-
-    const simpleTypeName = baseType.split('.').pop() || baseType;
-    if (JAVA_TO_ZOD_MAP[simpleTypeName]) {
-        return JAVA_TO_ZOD_MAP[simpleTypeName](...generics);
-    }
-
-    return z.object({});
-}
-
-// 定义参数类型接口
-interface ApiParam {
-    name: string;
-    type: string;
-    description?: string;
-    required: boolean;
-}
-
-const convertParamsToZ = function (params: Record<string, string>) {
-    const zParams: Record<string, ZodType> = {};
-    for (const param in params) {
-        let zodType = convertJavaTypeToZod(param["type"]);
-        if (param["description"]) {
-            zodType = zodType.describe(param["description"]);
-        }
-        if (!param["required"]) { // 注意：原逻辑可能有误，required为true时不应optional
-            zodType = zodType.optional();
-        }
-
-        zParams[param["name"]] = zodType;
-    }
-    console.log(JSON.stringify(zParams))
-    return zParams;
 };
 
 
@@ -175,7 +70,6 @@ fetch('https://xiaobenyang.com/api/' + mcpID, {
         const apiDescList = data.tools;
 
         const addToolXiaoBenYangApi = function (
-            aid: string,
             title: string,
             desc: string,
             params: Record<string, ZodType>
@@ -188,18 +82,56 @@ fetch('https://xiaobenyang.com/api/' + mcpID, {
                     inputSchema: params,
                 }
                 ,
-                async (args: Record<string, any>) => handleXiaoBenYangApi(args, aid)
+                async (args: Record<string, any>) => handleXiaoBenYangApi(args, title)
             )
         };
 
         console.log("g5555");
 
         for (const apiDesc of apiDescList) {
-            addToolXiaoBenYangApi(apiDesc.apiId.toString(),
-                apiDesc.title,
+            let inputSchema = JSON.parse(apiDesc.inputSchema);
+            const zodDict = {};
+
+            // 遍历 properties 中的每个字段
+            Object.entries(inputSchema.properties).forEach(([name, propConfig]) => {
+                let zodType;
+                // 根据 type 映射 Zod 类型（可扩展更多类型）
+                let pt = (propConfig as { type: string }).type;
+                switch (pt) {
+                    case 'string':
+                        zodType = z.string();
+                        break;
+                    case 'number':
+                        zodType = z.number();
+                        break;
+                    case 'boolean':
+                        zodType = z.boolean();
+                        break;
+                    case 'integer':
+                        zodType = z.bigint();
+                        break;
+                    case 'array':
+                        zodType = z.array(z.any());
+                        break;
+                    case 'object':
+                        zodType = z.object(z.any());
+                        break;
+                    default:
+                        zodType = z.any();
+                }
+
+                // 如果字段在 required 中，设置为必填
+                if (inputSchema.required?.includes(name)) {
+                    zodDict[name] = zodType;
+                } else {
+                    zodDict[name] = zodType.optional();
+                }
+            });
+
+            addToolXiaoBenYangApi(
+                apiDesc.name,
                 apiDesc.description ? apiDesc.description : apiDesc.title,
-                convertParamsToZ(apiDesc.params)
-            );
+                z.object(zodDict));
         }
         isLoading = true;
 
