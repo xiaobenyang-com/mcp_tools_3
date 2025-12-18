@@ -126,6 +126,12 @@ fetch('https://mcp.xiaobenyang.com/getMcpDesc?mcpId=' + mcpID, {
                 } else {
                     zodDict[name] = zodType.optional();
                 }
+
+                if(zodType._def) {
+                    console.log("zodType._def: ");
+                } else {
+                    console.log("zodType._def null");
+                }
             });
 
             addToolXiaoBenYangApi(
