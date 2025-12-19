@@ -5,8 +5,8 @@ import {server, isLoading} from "./xiaobenyang_mcp_tools.js";
 // })
 
 export const configSchema = z.object({
-    apiKey: z.string().describe("Your API key"),
-    mcpId: z.string().describe("Model to use"),
+    XBY_APIKEY: z.string().describe("Your API key"),
+    MCP_ID: z.string().describe("Model to use"),
 });
 
 export default function createServer({config,}: { config: z.infer<typeof configSchema> }) {
