@@ -34,8 +34,7 @@ const calcXiaoBenYangApi = async function (fullArgs: Record<string, any>) {
 };
 
 
-const handleXiaoBenYangApi = async (args: Record<string, any>, toolName: string) => {
-    console.log("handleXiaoBenYangApi: " + toolName);
+const  handleXiaoBenYangApi = async (args: Record<string, any>, toolName: string) => {
     // 校验aid是否存在
     if (toolName === undefined || toolName === null) {
         throw new Error("缺少必要参数 'aid'");
@@ -52,41 +51,35 @@ const server = new McpServer({
     version: "1.0.0",
 })
 
-console.log("1111111");
 let isLoading: boolean = false;
 
 fetch('https://mcp.xiaobenyang.com/getMcpDesc?mcpId=' + mcpID, {
     method: 'GET',
 }).then((res) => {
-    console.log("g22222");
     if (!res.ok) {
-        console.log("g33333");
         throw new Error(`请求失败：${res.status}`);
     }
     return res.json(); // 解析响应体为 JSON（假设返回 { apiDescList: [...] }）
 })
     .then((data) => {
-        console.log("g44444");
         const apiDescList = data.tools;
 
         const addToolXiaoBenYangApi = function (
-            title: string,
+            name: string,
             desc: string,
             params: Record<string, ZodType>
         ) {
             server.registerTool(
-                title,
+                name,
                 {
-                    title: title,
+                    title: name,
                     description: desc,
                     inputSchema: params,
                 }
                 ,
-                async (args: Record<string, any>) => handleXiaoBenYangApi(args, title)
+                async (args: Record<string, any>) => handleXiaoBenYangApi(args, name)
             )
         };
-
-        console.log("g5555");
 
         for (const apiDesc of apiDescList) {
             let inputSchema = JSON.parse(apiDesc.inputSchema);
@@ -94,6 +87,7 @@ fetch('https://mcp.xiaobenyang.com/getMcpDesc?mcpId=' + mcpID, {
 
             // 遍历 properties 中的每个字段
             Object.entries(inputSchema.properties).forEach(([name, propConfig]) => {
+                console.log("param name: " + name)
                 let zodType;
                 // 根据 type 映射 Zod 类型（可扩展更多类型）
                 let pt = (propConfig as { type: string }).type;
@@ -130,13 +124,13 @@ fetch('https://mcp.xiaobenyang.com/getMcpDesc?mcpId=' + mcpID, {
 
             addToolXiaoBenYangApi(
                 apiDesc.name,
-                apiDesc.description ? apiDesc.description : apiDesc.title,
+                apiDesc.description ? apiDesc.description : apiDesc.name,
                 z.object(zodDict));
+            console.log("api name: " + apiDesc.name)
+            console.log("api desc: " + (apiDesc.description ? apiDesc.description : apiDesc.name))
+            console.log("api z: " + JSON.stringify(zodDict));
         }
         isLoading = true;
-
-        console.log("g66666");
-
     });
 
 
